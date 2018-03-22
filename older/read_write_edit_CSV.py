@@ -4,6 +4,30 @@ import shutil
 from tempfile import NamedTemporaryFile #imported class
 # these are all built in functions in Python
 
+def read_data(user_id=None, email=None):
+    filename = "data.csv"
+    with open(filename, "r") as csvfile:
+        reader = csv.DictReader(csvfile)
+        items = []
+        unknown_user_id = None #must declare these before use due to if statements
+        unknown_email = None
+        for row in reader:
+            if user_id is not None: #is not None is a good idea in case you have a default above in the definition of the function
+                if int(user_id) == int(row.get("id")):
+                    return row
+                else:
+                    unknown_user_id = user_id
+            if email is not None:
+                if email == row.get("email"):
+                    return row
+                else:
+                    unknown_email = email
+        if unknown_user_id is not None:
+            return "User id {user_id} not found".format(user_id=user_id)
+        if unknown_email is not None:
+            return "Email {email} not found".format(email=email)
+    return None #if both user_id and email are blank it will return nothing
+
 #figure out the number of rows
 def get_length(file_path):
     with open("data.csv", "r") as csvfile:
@@ -51,9 +75,10 @@ def edit_data(edit_id=None, email=None, amount=None, sent=None):
                 print(row)
             else:
                 pass
-            writer.writerow(row)
-            shutil.move(temp_file.name, filename)#moves the data to the new file
+            writer.writerow(row)                        
+            shutil.move(temp_file.name, filename)#moves the data to the new file        
         return True #return True if it doesn't what it's supposed to
     return False #return False if it fails
-    
+
+
 edit_data(email="box1@toneangel.com", amount=99.99, sent="")
